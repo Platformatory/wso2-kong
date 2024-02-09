@@ -1,0 +1,18 @@
+type: throttling policy
+subtype: application policy
+version: v4.2.0
+data:
+  policyId: f81eaf73-9574-4060-9446-084acb06e1a2
+  policyName: 5PerMin
+  displayName: 5PerMin
+  description: ""
+  isDeployed: false
+  type: ApplicationThrottlePolicy
+  defaultLimit:
+    type: REQUESTCOUNTLIMIT
+    requestCount:
+      timeUnit: min
+      unitTime: 1
+      requestCount: 5
+    bandwidth: null
+    eventCount: null

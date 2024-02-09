@@ -1,0 +1,20 @@
+config:
+  http_request_timeout: 10000
+  export_directory: /root/.wso2apictl/exported
+  kubernetes_mode: false
+  token_type: JWT
+  vcs_deletion_enabled: false
+  vcs_config_file_path: ""
+  vcs_source_repo_path: ""
+  vcs_deployment_repo_path: ""
+  tls-renegotiation-mode: never
+environments:
+  production:
+    apim: https://wso2:9443
+    publisher: ""
+    devportal: ""
+    registration: ""
+    admin: ""
+    token: https://wso2:9443/oauth2/token
+    mi: ""
+mgw-clusters: {}

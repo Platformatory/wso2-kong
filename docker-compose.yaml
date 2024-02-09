@@ -1,0 +1,100 @@
+version: '1.1'
+
+services:
+  wso2:
+    build: ./wso2
+    ports:
+      - 9443:9443
+      - 8243:8243
+  wso2-import:
+    build:
+      context: ./wso2
+      dockerfile: Dockerfile.apictl
+    volumes:
+     - ./wso2/.wso2apictl:/root/.wso2apictl
+    depends_on:
+      - wso2
+  postgres:
+    image: postgres:13
+    restart: always
+    hostname: postgres
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_USER: kong
+
+  kong-cp-bootstrap:
+    image: kong/kong-gateway:3.5.0.3
+    depends_on:
+      - postgres
+    restart: on-failure
+    command: kong migrations bootstrap
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=postgres
+      - KONG_PG_DATABASE=kong
+      - KONG_PG_USER=kong
+      - KONG_PG_PASSWORD=kong
+      - KONG_PASSWORD=password
+
+  kong-control-plane:
+    image: kong/kong-gateway:3.5.0.3
+    hostname: kong-control-plane
+    user: kong
+    depends_on:
+      - postgres
+    restart: always
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+      - 8003:8003
+      - 8004:8004
+      - 8443:8443
+    command: kong start
+    environment:
+      - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN:-0.0.0.0:8000, 0.0.0.0:8443 ssl http2}
+      - KONG_ADMIN_API=http://localhost:8001
+      - KONG_ADMIN_GUI_URL=http://localhost:8002
+      - KONG_PORTAL_API_URL=http://localhost:8004
+      - KONG_PORTAL_GUI_HOST=localhost:8003
+      - KONG_PORTAL_GUI_URL=http://localhost:8003
+      - KONG_PORTAL_GUI_PROTOCOL=http
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+      - KONG_ADMIN_GUI_LISTEN=0.0.0.0:8002
+      - KONG_PORTAL_GUI_LISTEN=0.0.0.0:8003
+      - KONG_PORTAL_API_LISTEN=0.0.0.0:8004
+      - KONG_CLUSTER_LISTEN=0.0.0.0:8005 ssl
+      - KONG_CLUSTER_TELEMETRY_LISTEN=0.0.0.0:8006 ssl
+      - KONG_STATUS_LISTEN=0.0.0.0:8100
+      - KONG_PORTAL_CORS_ORIGINS=http://localhost:8004, http://localhost:8003
+      - KONG_LOG_LEVEL=info
+      - KONG_ENFORCE_RBAC=on
+      - KONG_ADMIN_GUI_AUTH=basic-auth
+      - KONG_PORTAL_AUTH=basic-auth
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_PORTAL_GUI_ACCESS_LOG=/dev/stdout
+      - KONG_PORTAL_GUI_ERROR_LOG=/dev/stderr
+      - KONG_PORTAL_API_ACCESS_LOG=/dev/stdout
+      - KONG_PORTAL_API_ERROR_LOG=/dev/stderr
+      - KONG_PORTAL=on
+      - KONG_ADMIN_GUI_FLAGS={"IMMUNITY_ENABLED":true}
+      - KONG_ANONYMOUS_REPORTS=off
+      - KONG_STREAM_LISTEN=off
+      - KONG_PG_PASSWORD=kong
+      - KONG_PG_USER=kong
+      - KONG_PG_DATABASE=kong
+      - KONG_PG_HOST=postgres
+      - KONG_ADMIN_GUI_SESSION_CONF={"cookie_secure":false,"storage":"kong","cookie_name":"admin_session","cookie_lifetime":31557600,"cookie_samesite":"off","secret":"thatsecret"}
+      - KONG_PORTAL_SESSION_CONF={"storage":"kong","cookie_name":"portal_session","secret":"thissecret","cookie_secure":false,"cookie_samesite":"off","cookie_domain":".kong.lan"}
+
+  kong-deck:
+    image: kong/deck:v1.8.1
+    command: sync --kong-addr http://kong-control-plane:8001
+    volumes: 
+      - ./kong/kong.yaml:/kong.yaml
+    depends_on:
+      - kong-control-plane

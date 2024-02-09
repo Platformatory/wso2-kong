@@ -1,0 +1,7 @@
+FROM golang:1.22
+
+COPY apictl /usr/bin/apictl
+
+COPY import.sh /
+
+CMD ["/import.sh"]

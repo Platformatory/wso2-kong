@@ -1,0 +1,127 @@
+_format_version: "1.1"
+consumers:
+- custom_id: demo
+  oauth2_credentials:
+  - client_id: zBfJnCCfYfPkX8p6qQfeorer1yMa
+    client_secret: $pbkdf2-sha512$i=10000,l=32$6hU5AMrriy0i8r2o94N0cw$B2lzGGKjbHaVQ3bSMhKfq4yhL5GpCWGe5hT+m7/GMjg
+    hash_secret: true
+    name: demo
+    redirect_uris:
+    - https://localhost:8443/anything
+  plugins:
+  - config:
+      day: null
+      error_code: 429
+      error_message: API rate limit exceeded
+      fault_tolerant: true
+      header_name: null
+      hide_client_headers: false
+      hour: null
+      limit_by: consumer
+      minute: 5
+      month: null
+      path: null
+      policy: local
+      redis_database: 0
+      redis_host: null
+      redis_password: null
+      redis_port: 6379
+      redis_server_name: null
+      redis_ssl: false
+      redis_ssl_verify: false
+      redis_timeout: 2000
+      redis_username: null
+      second: null
+      sync_rate: -1
+      year: null
+    enabled: true
+    name: rate-limiting
+    protocols:
+    - http
+    - https
+  username: demo
+plugins:
+- config:
+    accept_http_if_already_terminated: false
+    anonymous: null
+    auth_header_name: authorization
+    enable_authorization_code: false
+    enable_client_credentials: true
+    enable_implicit_grant: false
+    enable_password_grant: false
+    global_credentials: false
+    hide_credentials: false
+    mandatory_scope: false
+    persistent_refresh_token: false
+    pkce: lax
+    provision_key: zeHhJz1zQlV5DKuPwOazFPlyuPaikauo
+    refresh_token_ttl: 1209600
+    reuse_refresh_token: false
+    scopes:
+    - default
+    token_expiration: 3600
+  enabled: true
+  name: oauth2
+  protocols:
+  - http
+  - https
+services:
+- connect_timeout: 60000
+  host: httpbin.org
+  name: httpbin
+  path: /anything
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - hosts:
+    - localhost:8000
+    - localhost:8443
+    https_redirect_status_code: 426
+    methods:
+    - GET
+    - PUT
+    - POST
+    - PATCH
+    - DELETE
+    name: anything
+    path_handling: v0
+    paths:
+    - /anything
+    plugins:
+    - config:
+        add:
+          headers:
+          - x-custom-header:hello-world
+          json: []
+          json_types: []
+        append:
+          headers: []
+          json: []
+          json_types: []
+        remove:
+          headers: []
+          json: []
+        rename:
+          headers: []
+        replace:
+          headers: []
+          json: []
+          json_types: []
+      enabled: true
+      name: response-transformer
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
