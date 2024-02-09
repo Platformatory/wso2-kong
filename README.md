@@ -10,6 +10,8 @@ Configuration -
 
 ## Setup
 
+- Download version 4.2.0 of WSO2 API-M from the [official website](https://wso2.com/api-manager/) and place it in the [wso2](./wso2) directory. The file should be named `wso2am-4.2.0.zip`
+
 ```bash
 docker-compose up -d
 
