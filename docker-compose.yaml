@@ -93,8 +93,9 @@ services:
 
   kong-deck:
     image: kong/deck:v1.8.1
-    command: sync --kong-addr http://kong-control-plane:8001
+    entrypoint: /sync.sh
     volumes: 
+      - ./kong/sync.sh:/sync.sh
       - ./kong/kong.yaml:/kong.yaml
     depends_on:
       - kong-control-plane
