@@ -3,8 +3,8 @@ consumers:
 - custom_id: demo
   oauth2_credentials:
   - client_id: zBfJnCCfYfPkX8p6qQfeorer1yMa
-    client_secret: $pbkdf2-sha512$i=10000,l=32$6hU5AMrriy0i8r2o94N0cw$B2lzGGKjbHaVQ3bSMhKfq4yhL5GpCWGe5hT+m7/GMjg
-    hash_secret: true
+    client_secret: ZU2TAVKmdDUE_eZhUfHEjQoxLhka
+    hash_secret: false
     name: demo
     redirect_uris:
     - https://localhost:8443/anything
