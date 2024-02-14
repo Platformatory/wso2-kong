@@ -22,16 +22,24 @@ else
 fi
 
 api_url="https://$api_base_url/anything"
-header_name="x-custom-header"
-header_value="hello-world"
 
-response_headers=$(curl -s -k -i -X GET -H "Authorization: Bearer $access_token" "$api_url" 2>/dev/null)
+requests=0
 
+for i in {1..10}; do
 
-if echo "$response_headers" | grep -q "$header_name: $header_value"; then
-    echo "Header '$header_name: $header_value' found in the response from $api_url."
-    exit 0
-else
-    echo "Header '$header_name: $header_value' not found in the response from $api_url."
-    exit 1
+response_code=$(curl -k -s -o /dev/null -w "%{http_code}" -X GET -H "Authorization: Bearer $access_token" "$api_url")
+
+echo -en "Request count - $requests \r"
+if [ $response_code == 429 ]; then
+	echo -e "\nThe API returned response code 429 after $requests requests"
+	exit 0
+elif [ $response_code != 200 ]; then
+	echo "Something went wrong. The API returned response code - $response_code" 
 fi
+
+sleep 1
+
+requests=$((requests+1))
+
+done
+
