@@ -1,8 +1,14 @@
-# WSO2 to Kong
+# Objective
 
-Like to like comparision between WSO2 and Kong.
+This repository showcases a parity of capabilities between WSO2 and Kong, across 3 typical use-case archetypes, involving:
 
-Configuration - 
+- Security (OAuth)
+- Traffic Management (Rate Limiting)
+- Mediation (Header addition)
+
+The larger goal here is to demonstrate migration capabilities from WSO2 to the latter, particularly in legacy environments using a simple templating oriented methodology. An advanced goal that can also be achieved is using a policy translation layer that compiles to equivalent Kong plugin configuration.  We also intend to demonstrate a set of E2E integration tests that assert desired gateway functionality and help assure functional aspects of migration. These are particularly relevant for performance comparisons as well as large-scale migrations involving hundreds of API proxies.
+
+# Comparison details 
 
 - OAuth2 for authentication for all requests(globally) with the respective gateways as the IDP.
 - Add response header of `x-custom-header: hello-world` to the GET requests
