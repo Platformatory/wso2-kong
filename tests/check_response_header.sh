@@ -27,11 +27,12 @@ header_value="hello-world"
 
 response_headers=$(curl -s -k -i -X GET -H "Authorization: Bearer $access_token" "$api_url" 2>/dev/null)
 
+echo -e "Testing if response contains header '$header_name: $header_value'\n"
 
 if echo "$response_headers" | grep -q "$header_name: $header_value"; then
-    echo "Header '$header_name: $header_value' found in the response from $api_url."
+    echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m Header '$header_name: $header_value' found in the response from $api_url."
     exit 0
 else
-    echo "Header '$header_name: $header_value' not found in the response from $api_url."
+    echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m Header '$header_name: $header_value' not found in the response from $api_url."
     exit 1
 fi

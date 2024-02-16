@@ -23,23 +23,29 @@ fi
 
 api_url="https://$api_base_url/anything"
 
-requests=0
+rate_limit=5
 
-for i in {1..10}; do
+echo -e "Testing if API is rate limited after $rate_limit requests in a minute\n"
 
+message=""
+
+for requests in {1..6}; do
+
+echo -en "Calling the API ... Request count - $requests \r"
 response_code=$(curl -k -s -o /dev/null -w "%{http_code}" -X GET -H "Authorization: Bearer $access_token" "$api_url")
 
-echo -en "Request count - $requests \r"
-if [ $response_code == 429 ]; then
-	echo -e "\nThe API returned response code 429 after $requests requests"
-	exit 0
-elif [ $response_code != 200 ]; then
-	echo "Something went wrong. The API returned response code - $response_code" 
-fi
+message="API returned response code $response_code after $(($requests-1)) requests"
 
 sleep 1
 
-requests=$((requests+1))
-
 done
+
+if  [ $response_code == 429 ]; then
+	echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m $message"
+	exit 0
+elif [ $response_code != 429 ]; then
+	echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m $message"
+       exit 1	
+fi
+
 

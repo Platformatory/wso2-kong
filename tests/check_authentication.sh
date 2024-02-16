@@ -27,12 +27,26 @@ response_code_with_authn=$(curl -k -s -o /dev/null -w "%{http_code}" -X GET -H "
 
 response_code_without_authn=$(curl -k -s -o /dev/null -w "%{http_code}" -X GET "$api_url")
 
-echo "API returned $response_code_with_authn for request with the OAuth token"
-echo "API returned $response_code_without_authn for request without the OAuth token"
+echo -e "Testing API with and without OAuth authentication token header\n"
+
+message_for_with_authn="API returned response code $response_code_with_authn for request with the OAuth token"
+message_for_without_authn="API returned response code $response_code_without_authn for request without the OAuth token"
 
 if [ $response_code_with_authn == 200 ] && [ $response_code_without_authn == 401 ]; then
+	echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m $message_for_with_authn"
+	echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m $message_for_without_authn"
 	exit 0
+elif [ $response_code_with_authn == 200 ] && [ $response_code_without_authn != 401 ]; then
+	echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m $message_for_with_authn"
+	echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m $message_for_without_authn"
+	exit 1
+elif [ $response_code_with_authn != 200 ] && [ $response_code_without_authn == 401 ]; then
+	echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m $message_for_with_authn"
+	echo -e "\e[92m\x1B[1m  ✓ Success:\e[0m $message_for_without_authn"
+	exit 1
 else
+	echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m $message_for_with_authn"
+	echo -e "\e[91m\x1B[1m  ✗ Failure:\e[0m $message_for_without_authn"
 	exit 1
 fi
 
