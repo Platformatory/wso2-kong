@@ -40,6 +40,15 @@ consumers:
     - http
     - https
   username: demo
+- custom_id: unlimited
+  oauth2_credentials:
+  - client_id: jIAgvdTbbZr5VSRSk3kwb3L51_wa
+    client_secret: sVUDpi77hrcWGCwlZAfE9tDo5Ysa
+    hash_secret: false
+    name: Unlimited
+    redirect_uris:
+    - https://localhost:8443/anything
+  username: unlimited
 plugins:
 - config:
     accept_http_if_already_terminated: false

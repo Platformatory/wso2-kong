@@ -16,3 +16,5 @@ apictl import api -f /production/httpbin_1.0.0.zip -e production -k
 
 apictl import app -f /production/admin_DemoApplication.zip -e production -o admin -k
 
+apictl import app -f /production/admin_UnlimitedApplication.zip -e production -o admin -k
+
