@@ -26,7 +26,29 @@ docker-compose up -d
 
 ## Test
 
-### WSO2
+### Scripted
+
+```bash
+# Authentication
+./tests/check_authentication.sh wso2
+./tests/check_authentication.sh kong
+
+# Mediation
+./tests/check_response_header.sh wso2
+./tests/check_response_header.sh kong
+
+# Rate limit
+./tests/check_rate_limiting.sh wso2
+./tests/check_rate_limiting.sh kong
+
+# Benchmark (Note: you will need vegeta installed from https://github.com/tsenart/vegeta)
+./tests/benchmark.sh wso2
+./tests/benchmark.sh kong
+```
+
+### Manual
+
+#### WSO2
 
 ```bash
 # Get access token
@@ -36,7 +58,7 @@ export WSO2_ACCESS_TOKEN=`curl -k -X POST https://localhost:9443/oauth2/token -d
 for i in {1..10}; do curl -k -i -X 'GET'   'https://localhost:8243/anything/1.0.0'   -H 'accept: */*'   -H "Authorization: Bearer $WSO2_ACCESS_TOKEN"; done
 ```
 
-### Kong
+#### Kong
 
 ```bash
 # Get access token
