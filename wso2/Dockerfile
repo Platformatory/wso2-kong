@@ -115,6 +115,10 @@ RUN \
     && cp -r ${WSO2_SERVER_HOME}/repository/deployment/server/executionplans ${USER_HOME}/wso2-tmp \
     && rm -f ${WSO2_SERVER}.zip
 
+ADD --chown=wso2carbon:wso2 https://jdbc.postgresql.org/download/postgresql-42.7.1.jar ${WSO2_SERVER_HOME}/repository/components/lib/
+
+COPY --chown=wso2carbon:wso2 deployment.toml ${WSO2_SERVER_HOME}/repository/conf/deployment.toml
+
 # remove unnecesary packages
 RUN apt-get purge -y netcat unzip wget
 

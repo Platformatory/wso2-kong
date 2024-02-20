@@ -28,6 +28,6 @@ api_url="https://$api_base_url/anything"
 
 echo -e "Running a benchmark for the API\n" 
 
-echo -e "GET $api_url\nAuthorization:Bearer $access_token" | vegeta attack -insecure -duration=5s | tee results.bin | vegeta report
+echo -e "GET $api_url\nAuthorization:Bearer $access_token" | vegeta attack -insecure -keepalive=false -duration=5s | tee results.bin | vegeta report
 
 rm results.bin

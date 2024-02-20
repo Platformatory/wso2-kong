@@ -6,18 +6,30 @@ services:
     ports:
       - 9443:9443
       - 8243:8243
+    depends_on:
+      - wso2-postgres
   wso2-import:
     build:
       context: ./wso2
       dockerfile: Dockerfile.apictl
     volumes:
-     - ./wso2/.wso2apictl:/root/.wso2apictl
+    - ./wso2/.wso2apictl:/root/.wso2apictl
     depends_on:
       - wso2
-  postgres:
+  wso2-postgres:
     image: postgres:13
     restart: always
-    hostname: postgres
+    hostname: wso2-postgres
+    volumes:
+    - ./wso2/postgresql.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_DB: wso2
+      POSTGRES_PASSWORD: wso2carbon
+      POSTGRES_USER: wso2carbon
+  kong-postgres:
+    image: postgres:13
+    restart: always
+    hostname: kong-postgres
     environment:
       POSTGRES_DB: kong
       POSTGRES_PASSWORD: kong
@@ -26,12 +38,12 @@ services:
   kong-cp-bootstrap:
     image: kong/kong-gateway:3.5.0.3
     depends_on:
-      - postgres
+      - kong-postgres
     restart: on-failure
     command: kong migrations bootstrap
     environment:
       - KONG_DATABASE=postgres
-      - KONG_PG_HOST=postgres
+      - KONG_PG_HOST=kong-postgres
       - KONG_PG_DATABASE=kong
       - KONG_PG_USER=kong
       - KONG_PG_PASSWORD=kong
@@ -42,7 +54,7 @@ services:
     hostname: kong-control-plane
     user: kong
     depends_on:
-      - postgres
+      - kong-postgres
     restart: always
     ports:
       - 8000:8000
@@ -87,7 +99,7 @@ services:
       - KONG_PG_PASSWORD=kong
       - KONG_PG_USER=kong
       - KONG_PG_DATABASE=kong
-      - KONG_PG_HOST=postgres
+      - KONG_PG_HOST=kong-postgres
       - KONG_ADMIN_GUI_SESSION_CONF={"cookie_secure":false,"storage":"kong","cookie_name":"admin_session","cookie_lifetime":31557600,"cookie_samesite":"off","secret":"thatsecret"}
       - KONG_PORTAL_SESSION_CONF={"storage":"kong","cookie_name":"portal_session","secret":"thissecret","cookie_secure":false,"cookie_samesite":"off","cookie_domain":".kong.lan"}
 
